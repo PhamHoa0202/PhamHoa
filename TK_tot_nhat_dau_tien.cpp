@@ -25,7 +25,7 @@ int hamDanhGia(int x1, int y1, int x2, int y2) {
 }
 
 void timKiemTotNhat(int batDauX, int batDauY, int dichX, int dichY) {
-    priority_queue<Nut> danhSachMo;  // Danh s·ch OPEN
+    priority_queue<Nut> danhSachMo;  // Danh s√°ch OPEN
     vector<vector<bool> > danhSachDaTham(10, vector<bool>(10, false));  
     
     
@@ -45,11 +45,11 @@ void timKiemTotNhat(int batDauX, int batDauY, int dichX, int dichY) {
             vector<pair<int, int> > duongDi;
             Nut* pathNode = new Nut(current.x, current.y, current.h);
             duongDi.push_back({pathNode->x, pathNode->y});
-            while (current.cha != NULL) {  // S? d?ng NULL thay cho nullptr
+            while (current.cha != NULL) {  
                 duongDi.push_back({current.cha->x, current.cha->y});
                 current = *current.cha;
             }
-            // In ˝?ng i
+          
             for (int i = duongDi.size() - 1; i >= 0; --i) {
                 cout << "(" << duongDi[i].first << ", " << duongDi[i].second << ") ";
             }
@@ -68,10 +68,10 @@ void timKiemTotNhat(int batDauX, int batDauY, int dichX, int dichY) {
 
         
             if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10 && !danhSachDaTham[newX][newY]) {
-                int newH = hamDanhGia(newX, newY, dichX, dichY);  // TÌnh h‡m ·nh gi· cho ?nh k?
+                int newH = hamDanhGia(newX, newY, dichX, dichY); 
                 Nut* nuTiepTheo = new Nut(newX, newY, newH);
-                nuTiepTheo->cha = new Nut(current.x, current.y, current.h);  // LiÍn k?t v?i cha
-                danhSachMo.push(*nuTiepTheo);  // ThÍm v‡o danh s·ch OPEN
+                nuTiepTheo->cha = new Nut(current.x, current.y, current.h);  // Li√™n k?t v?i cha
+                danhSachMo.push(*nuTiepTheo);  // Th√™m v√†o danh s√°ch OPEN
             }
         }
     }
@@ -88,7 +88,7 @@ int main() {
     timKiemTotNhat(0, 0, 4, 5);
 
 
-    cout << "C?u h?nh 3: Bat dau (2, 3) -> Dich (6, 6)" << endl;
+    cout << "Cau hinh 3: Bat dau (2, 3) -> Dich (6, 6)" << endl;
     timKiemTotNhat(2, 3, 6, 6);
 
 
