@@ -18,7 +18,7 @@ void timKiemTheoChieuRong(int soDinh, vector<vector<int> >& danhSachKe, int batD
         int u = hangDoi.front();  // lay dinh dau tien trong hang doi
         hangDoi.pop();  // loai bo dinh da lay
 
-        // neu dinh u l√† dinh ket thuc, tim kiem thanh cong
+        // neu dinh u l‡ dinh ket thuc, tim kiem thanh cong
         if (u == ketThuc) {
             cout << "tim kiem thanh cong, duong di la: ";
             vector<int> duongDi;
@@ -69,13 +69,13 @@ int main() {
     danhSachKe2[1].push_back(2);
     timKiemTheoChieuRong(soDinh2, danhSachKe2, 0, 3);  
 
-    // cau h√¨nh 3
+    // cau hinh 3
     cout << "Cau hinh 3: Tim kiem tu dinh 0 den dinh 4" << endl;
     int soDinh3 = 6;
     vector<vector<int> > danhSachKe3(soDinh3);
     danhSachKe3[0].push_back(1);
     danhSachKe3[1].push_back(2);
-    danhSachKe3[2].push_back(0);  // Chu tr√¨nh 0 -> 1 -> 2 -> 0
+    danhSachKe3[2].push_back(0);  // Chu trÏnh 0 -> 1 -> 2 -> 0
     danhSachKe3[1].push_back(3);
     danhSachKe3[3].push_back(4);
     timKiemTheoChieuRong(soDinh3, danhSachKe3, 0, 4);
@@ -86,7 +86,7 @@ int main() {
     vector<vector<int> > danhSachKe4(soDinh4);
     danhSachKe4[0].push_back(1);
     danhSachKe4[1].push_back(2);
-    danhSachKe4[2].push_back(0);  // Chu tr√¨nh 0 -> 1 -> 2 -> 0
+    danhSachKe4[2].push_back(0);  // Chu trÏnh 0 -> 1 -> 2 -> 0
     danhSachKe4[1].push_back(3);
     danhSachKe4[3].push_back(4);
     timKiemTheoChieuRong(soDinh4, danhSachKe4, 1, 4);
