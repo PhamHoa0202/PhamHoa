@@ -1,0 +1,98 @@
+#include <iostream>
+#include <string>
+#include <map>
+#include <stack>
+#include <cctype>
+using namespace std;
+
+bool kiem_tra_bieu_thuc_hop_le(const string& bieu_thuc) {
+    int so_ngoac = 0;
+    bool kiem_tra_bien = false;
+    for (size_t i = 0; i < bieu_thuc.length(); i++) {
+        char ky_tu = bieu_thuc[i];
+        if (ky_tu == '(') {
+            so_ngoac++;
+            kiem_tra_bien = false;
+        } else if (ky_tu == ')') {
+            so_ngoac--;
+            if (so_ngoac < 0) return false;
+            kiem_tra_bien = true;
+        }
+        else if (ky_tu == '!' || ky_tu == '&' || ky_tu == '|' || ky_tu == '^' || ky_tu == '-') {
+            kiem_tra_bien = false;
+        }
+        else if (isalnum(ky_tu)) {
+            if (kiem_tra_bien) return false; 
+            kiem_tra_bien = true;
+        }
+        else if (ky_tu != ' ') {
+            return false;
+        }
+    }
+    return so_ngoac == 0;
+}
+void thuc_hien_phep_tinh(stack<bool>& ket_qua, stack<char>& toan_tu) {
+    if (toan_tu.empty() || ket_qua.size() < 2) return;
+    bool b = ket_qua.top(); ket_qua.pop();
+    bool a = ket_qua.top(); ket_qua.pop();
+    char op = toan_tu.top(); toan_tu.pop();
+    if (op == '&') ket_qua.push(a && b);
+    else if (op == '|') ket_qua.push(a || b);
+    else if (op == '^') ket_qua.push(a ^ b); // Phép XOR
+    else if (op == '-') ket_qua.push(!a || b); // Phép suy lu?n
+}
+bool tinh_toan_bieu_thuc(const string& bieu_thuc, const map<char, bool>& gia_tri_bien) {
+    stack<bool> ket_qua;
+    stack<char> toan_tu;
+    for (size_t i = 0; i < bieu_thuc.length(); i++) {
+        char ky_tu = bieu_thuc[i];
+        if (isalnum(ky_tu)) {
+            ket_qua.push(gia_tri_bien.at(ky_tu));
+        } else if (ky_tu == '!') {
+            bool gia_tri = ket_qua.top(); ket_qua.pop();
+            ket_qua.push(!gia_tri);
+        } else if (ky_tu == '&' || ky_tu == '|' || ky_tu == '^') {
+            while (!toan_tu.empty() && toan_tu.top() != '(') {
+                thuc_hien_phep_tinh(ket_qua, toan_tu);
+            }
+            toan_tu.push(ky_tu);
+        } else if (ky_tu == '(') {
+            toan_tu.push(ky_tu);
+        } else if (ky_tu == ')') {
+            while (!toan_tu.empty() && toan_tu.top() != '(') {
+                thuc_hien_phep_tinh(ket_qua, toan_tu);
+            }
+    
+        } else if (ky_tu == '-' && i + 1 < bieu_thuc.length() && bieu_thuc[i + 1] == '>') {
+            toan_tu.push('-');
+            i++; // B? qua ký t? '>'
+        }
+    }
+    while (!toan_tu.empty()) {
+        thuc_hien_phep_tinh(ket_qua, toan_tu);
+    }
+    return ket_qua.top();
+}
+int main() {
+    string bieu_thuc;
+    cout << "Nhap bieu thuc: ";
+    getline(cin, bieu_thuc);
+    if (!kiem_tra_bieu_thuc_hop_le(bieu_thuc)) {
+        cout << "Bieu thuc khong hop le." << endl;
+        return 0;
+    }
+    map<char, bool> gia_tri_bien;
+    int so_bien;
+    cout << "Nhap so luong bien: ";
+    cin >> so_bien;
+    for (int i = 0; i < so_bien; i++) {
+        char bien;
+        bool gia_tri;
+        cout << "Nhap bien: ";
+        cin >> bien >> gia_tri;
+        gia_tri_bien[bien] = gia_tri;
+    }
+    bool ket_qua = tinh_toan_bieu_thuc(bieu_thuc, gia_tri_bien);
+    cout << "Ket qua cua bieu thuc: " << (ket_qua ? "True" : "False") << endl;
+    return 0;
+}
