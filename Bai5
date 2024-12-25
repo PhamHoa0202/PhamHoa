@@ -1,0 +1,41 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <string>
+using namespace std;
+
+bool evaluateExpression(bool A, bool B, bool C, const string& expression) {
+    if (expression == "(A | B) & (!A | C)") {
+        return (A || B) && (!A || C);
+    }
+    return false;
+}
+void findSatisfyingAssignment(const string& expression) {
+    vector<char> variables;
+    variables.push_back('A');
+    variables.push_back('B'); 
+    variables.push_back('C'); 
+    int numVariables = variables.size();
+
+    for (int i = 0; i < (1 << numVariables); ++i) {
+        map<char, bool> assignment;
+        assignment['A'] = (i & (1 << 0)) != 0;
+        assignment['B'] = (i & (1 << 1)) != 0;
+        assignment['C'] = (i & (1 << 2)) != 0;
+        if (evaluateExpression(assignment['A'], assignment['B'], assignment['C'], expression)) {
+            cout << " Mau gia tri tim duoc:\n";
+            for (map<char, bool>::iterator it = assignment.begin(); it != assignment.end(); ++it) {
+                cout << it->first << ": " << (it->second ? "True" : "False") << "\n";
+            }
+            return;
+        }
+    }
+    cout << "Sai\n";
+}
+int main() {
+    string expression;
+    cout << "Nhap bieu thuc logic: (A | B) & (!A | C)): ";
+    getline(cin, expression);
+    findSatisfyingAssignment(expression);
+    return 0;
+}
