@@ -1,0 +1,75 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <string>
+using namespace std;
+
+bool implication(bool a, bool b) {
+    return !a || b; 
+}
+
+bool evaluate(const string& statement, const map<char, bool>& values) {
+    if (statement == "P ? Q") {
+        return implication(values.at('P'), values.at('Q'));
+    } else if (statement == "Q ? R") {
+        return implication(values.at('Q'), values.at('R'));
+    } else if (statement == "P ? R") {
+        return implication(values.at('P'), values.at('R'));
+    }
+    return false;
+}
+
+bool proveStatement(const vector<string>& premises, const string& conclusion) {
+    vector<char> variables;
+    variables.push_back('P');
+    variables.push_back('Q');
+    variables.push_back('R');
+
+    int numVariables = variables.size();
+    for (int i = 0; i < (1 << numVariables); ++i) {
+        map<char, bool> values;
+        values['P'] = (i & (1 << 0)) != 0;
+        values['Q'] = (i & (1 << 1)) != 0;
+        values['R'] = (i & (1 << 2)) != 0;
+
+        bool allPremisesTrue = true;
+        for (size_t j = 0; j < premises.size(); ++j) {
+            if (!evaluate(premises[j], values)) {
+                allPremisesTrue = false;
+                break;
+            }
+        }
+        if (allPremisesTrue && !evaluate(conclusion, values)) {
+            return false; 
+        }
+    }
+
+    return true; 
+}
+
+int main() {
+    vector<string> premises;
+    string conclusion;
+    int n;
+    cout << "Nhap so luong menh de: ";
+    cin >> n;
+    cin.ignore(); 
+
+    cout << "Nhap cac menh de:\n";
+    for (int i = 0; i < n; ++i) {
+        string premise;
+        cout << "Menh de: " << i + 1 << ": ";
+        getline(cin, premise);
+        premises.push_back(premise);
+    }
+    cout << "Nhap ket luan can chung minh: ";
+    getline(cin, conclusion);
+
+    if (proveStatement(premises, conclusion)) {
+        cout << "Ket luan dung.\n";
+    } else {
+        cout << "Ket luan sai.\n";
+    }
+
+    return 0;
+}
