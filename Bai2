@@ -1,0 +1,120 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+#include <stack>
+#include <set>
+#include <cmath>
+using namespace std;
+
+// Hàm ki?m tra tính h?p l? c?a bi?u th?c logic
+bool kiem_tra_bieu_thuc_hop_le(const string &bieu_thuc) {
+    int so_ngoac = 0;
+    for (size_t i = 0; i < bieu_thuc.length(); ++i) {
+        char ky_tu = bieu_thuc[i];
+        if (ky_tu == '(') so_ngoac++;
+        else if (ky_tu == ')') so_ngoac--;
+        if (so_ngoac < 0) return false;
+    }
+    return so_ngoac == 0;
+}
+
+// Hàm tính toán bi?u th?c logic d?a trên giá tr? các bi?n
+bool tinh_toan_bieu_thuc(const string &bieu_thuc, const map<char, bool> &gia_tri_bien) {
+    stack<bool> ket_qua;
+    stack<char> toan_tu;
+
+    for (size_t i = 0; i < bieu_thuc.length(); ++i) {
+        char ky_tu = bieu_thuc[i];
+        if (ky_tu == ' ') continue; // B? qua kho?ng tr?ng
+
+        if (isalpha(ky_tu)) { // Là bi?n
+            if (gia_tri_bien.find(ky_tu) == gia_tri_bien.end()) {
+                cerr << "Loi: Bien " << ky_tu << " chua duoc khai bao gia tri." << endl;
+                exit(1);
+            }
+            ket_qua.push(gia_tri_bien.at(ky_tu));
+        } else if (ky_tu == '(') {
+            toan_tu.push(ky_tu);
+        } else if (ky_tu == ')') {
+            while (!toan_tu.empty() && toan_tu.top() != '(') {
+                char op = toan_tu.top();
+                toan_tu.pop();
+                bool b = ket_qua.top();
+                ket_qua.pop();
+                bool a = ket_qua.top();
+                ket_qua.pop();
+
+                if (op == '&') ket_qua.push(a && b);
+                else if (op == '|') ket_qua.push(a || b);
+            }
+            toan_tu.pop(); // Lo?i b? '('
+        } else if (ky_tu == '&' || ky_tu == '|') {
+            toan_tu.push(ky_tu);
+        } else if (ky_tu == '!') {
+            bool a = ket_qua.top();
+            ket_qua.pop();
+            ket_qua.push(!a);
+        }
+    }
+
+    while (!toan_tu.empty()) {
+        char op = toan_tu.top();
+        toan_tu.pop();
+        bool b = ket_qua.top();
+        ket_qua.pop();
+        bool a = ket_qua.top();
+        ket_qua.pop();
+        if (op == '&') ket_qua.push(a && b);
+        else if (op == '|') ket_qua.push(a || b);
+    }
+
+    return ket_qua.top();
+}
+void tao_bang_chan_tri(const string &bieu_thuc, const vector<char> &bien) {
+    int so_hang = pow(2, bien.size());
+
+ for (size_t i = 0; i < bien.size(); i++) {
+    cout << bien[i] ;
+}
+    cout << "Ket qua" << endl;
+
+    for (int i = 0; i < so_hang; ++i) {
+        map<char, bool> gia_tri_bien;
+        for (size_t j = 0; j < bien.size(); ++j) {
+            gia_tri_bien[bien[j]] = (i & (1 << j)) != 0;
+        }
+
+       for (size_t i = 0; i < bien.size(); ++i) {
+    cout << (gia_tri_bien[bien[i]] ? "T" : "F") ;
+}
+
+        bool ket_qua = tinh_toan_bieu_thuc(bieu_thuc, gia_tri_bien);
+        cout << (ket_qua ? "T" : "F") << endl;
+    }
+}
+
+int main() {
+    string bieu_thuc;
+    cout << "Nhap bieu thuc logic: ";
+    getline(cin, bieu_thuc);
+
+    if (!kiem_tra_bieu_thuc_hop_le(bieu_thuc)) {
+        cerr << "Loi: Bieu thuc khong hop le." << endl;
+        return 1;
+    }
+
+    int so_bien;
+    cout << "Nhap so luong bien: ";
+    cin >> so_bien;
+
+    vector<char> bien(so_bien);
+    cout << "Nhap ten cac bien (vd: A B C): ";
+    for (int i = 0; i < so_bien; ++i) {
+        cin >> bien[i];
+    }
+
+    tao_bang_chan_tri(bieu_thuc, bien);
+
+    return 0;
+}
