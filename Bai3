@@ -1,0 +1,102 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <map>
+#include <sstream>
+
+using namespace std;
+
+bool for_all(const vector<int>& domain, bool (*predicate)(int)) {
+    for (size_t i = 0; i < domain.size(); ++i) {
+        if (!predicate(domain[i])) return false;
+    }
+    return true;
+}
+
+bool there_exists(const vector<int>& domain, bool (*predicate)(int)) {
+    for (size_t i = 0; i < domain.size(); ++i) {
+        if (predicate(domain[i])) return true;
+    }
+    return false;
+}
+
+
+bool evaluate_formula(const string& formula, const vector<int>& domain, const map<string, bool (*)(int)>& predicates) {
+    istringstream stream(formula);
+    string token;
+    bool result = true;
+
+    while (stream >> token) {
+        if (token == "A") { 
+            string var, predicate;
+            stream >> var >> predicate;
+            if (var != "X") {
+                cerr << "Loi cu phap khong hop le sau 'A': " << var << endl;
+                return false;
+            }
+            if (predicates.find(predicate) == predicates.end()) {
+                cerr << "Loi: vi tu" << predicate << " chua duoc dinh nghia." << endl;
+                return false;
+            }
+            result = result && for_all(domain, predicates.at(predicate));
+        } else if (token == "E") { 
+            string var, predicate;
+            stream >> var >> predicate;
+            if (var != "X") {
+                cerr << "loi cu phap khong hop le 'E': " << var << endl;
+                return false;
+            }
+            if (predicates.find(predicate) == predicates.end()) {
+                cerr << "Loi vi tu " << predicate << " chua duoc dinh nghia." << endl;
+                return false;
+            }
+            result = result && there_exists(domain, predicates.at(predicate));
+        } else if (token == "^") { // Phép AND
+            bool sub_result = evaluate_formula(formula.substr(stream.tellg()), domain, predicates);
+            result = result && sub_result;
+        } else if (token == "v") { // Phép OR
+            bool sub_result = evaluate_formula(formula.substr(stream.tellg()), domain, predicates);
+            result = result || sub_result;
+        } else {
+            cerr << "Loi cu phap khong hop le: '" << token << "'." << endl;
+            return false;
+        }
+    }
+
+    return result;
+}
+
+bool P(int x) {
+    return x > 1;
+}
+
+bool Q(int x) {
+    return x % 2 == 0;
+}
+
+int main() {
+   
+    string formula;
+    cout << "Nhap cong thuc vi tu (vd: A X P ^ E X Q): ";
+    getline(cin, formula);
+
+    int n;
+    cout << "Nhap so luong phan tu trong mien gia tri: ";
+    cin >> n;
+
+    vector<int> domain(n);
+    cout << "Nhap cac phan tu cua mien gia tri: ";
+    for (int i = 0; i < n; ++i) {
+        cin >> domain[i];
+    }
+
+    map<string, bool (*)(int)> predicates;
+    predicates["P"] = P;
+    predicates["Q"] = Q;
+
+    bool result = evaluate_formula(formula, domain, predicates);
+
+    cout << (result ? "Cong thuc dung" : "Cong thuc sai") << endl;
+
+    return 0;
+}
